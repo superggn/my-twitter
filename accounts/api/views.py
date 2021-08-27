@@ -1,13 +1,13 @@
-from django.contrib.auth.models import User
-from rest_framework import viewsets
-from rest_framework import permissions
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from django.contrib.auth import (
     logout as django_logout,
     login as django_login,
     authenticate as django_authenticate,
 )
+from django.contrib.auth.models import User
+from rest_framework import permissions
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from accounts.api.serializers import (
     UserSerializer,
@@ -96,4 +96,4 @@ class AccountViewSet(viewsets.ViewSet):
         return Response({
             'success': True,
             'user': UserSerializer(user).data,
-        })
+        }, status=201)
