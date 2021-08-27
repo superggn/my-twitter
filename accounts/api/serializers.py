@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers
 from rest_framework import exceptions
+from rest_framework import serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,6 +33,12 @@ class SignupSerializer(serializers.ModelSerializer):
     # will be called when is_valid is called
     def validate(self, data):
         # TODO<HOMEWORK> 增加验证 username 是不是只由给定的字符集合构成
+        for character in data['username']:
+            if character.isalpha() or character.isdigit() or character in "_":
+                continue
+            raise exceptions.ValidationError({
+                'username': 'This username contains invalid character.'
+            })
         # 检查用户名是否存在
         # case_insensitive
         if User.objects.filter(username=data['username'].lower()).exists():
