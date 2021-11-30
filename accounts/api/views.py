@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from accounts.api.serializers import (
     UserSerializer,
     LoginSerializer,
-    SignupSerializer
+    SignupSerializer,
 )
 
 
