@@ -51,6 +51,8 @@ class FriendshipViewSet(viewsets.GenericViewSet):
         #         'success': True,
         #         'duplicate': True,
         #     }, status=status.HTTP_201_CREATED)
+        # 无法 follow 不存在的用户， raise 404
+        self.get_object()
         serializer = FriendshipSerializerForCreate(data={
             'from_user_id': request.user.id,
             'to_user_id': pk,

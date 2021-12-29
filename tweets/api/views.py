@@ -17,6 +17,8 @@ class TweetViewSet(viewsets.GenericViewSet):
     # queryset 都是自己写，暂时不指定了
     # queryset = Tweet.objects.all()
     # 调用 self.get_queryset() 的时候会找类上面声明的这个 queryset
+    # 在这里声明的serializer 只在 debug 的时候会用到，就是 rest_framework
+    #  的那个HTML form 界面，推荐每个函数自己指定 serializer class
     serializer_class = TweetCreateSerializer
 
     def get_permissions(self):

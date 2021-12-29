@@ -55,6 +55,9 @@ class FriendshipApiTests(TestCase):
         response = self.linghu_client.post(FOLLOW_URL.format(self.dongxie.id))
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Friendship.objects.count(), count + 1)
+        # follow user does not exist
+        response = self.linghu_client.post(FOLLOW_URL.format(0))
+        self.assertEqual(response.status_code, 404)
 
     def test_unfollow(self):
         url = UNFOLLOW_URL.format(self.linghu.id)
