@@ -60,11 +60,14 @@ class SignupSerializer(serializers.ModelSerializer):
             raise exceptions.ValidationError({
                 'email': 'This email address has been occupied.'
             })
-        return data
+        validated_data = dict(data)
+        validated_data['email'] = data['email'].lower()
+        validated_data['username'] = data['username'].lower()
+        return validated_data
 
     def create(self, validated_data):
-        username = validated_data['username'].lower()
-        email = validated_data['email'].lower()
+        username = validated_data['username']
+        email = validated_data['email']
         password = validated_data['password']
         # create_user 是 django 帮忙定义的，你自己的类是没有这个函数的
         user = User.objects.create_user(
