@@ -84,4 +84,6 @@ class SignupSerializer(serializers.ModelSerializer):
             # 这里 create_user 自带了加密 password
             password=password,
         )
+        # Create UserProfile object
+        _ = user.profile
         return user
