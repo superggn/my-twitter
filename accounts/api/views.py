@@ -12,8 +12,12 @@ from rest_framework.response import Response
 from accounts.api.serializers import (
     LoginSerializer,
     SignupSerializer,
+    UserProfileSerializerForUpdate,
     UserSerializer,
+    UserSerializerWithProfile,
 )
+from accounts.models import UserProfile
+from utils.permissions import IsObjectOwner
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
@@ -21,8 +25,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     API endpoint that allows users to be viewed or edited.
     """
     queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializerWithProfile
+    permission_classes = (permissions.IsAdminUser,)
 
 
 class AccountViewSet(viewsets.ViewSet):
@@ -98,3 +102,12 @@ class AccountViewSet(viewsets.ViewSet):
             'success': True,
             'user': UserSerializer(user).data,
         }, status=201)
+
+
+class UserProfileViewSet(
+    viewsets.GenericViewSet,
+    viewsets.mixins.UpdateModelMixin,
+):
+    queryset = UserProfile
+    permission_classes = (permissions.IsAuthenticated, IsObjectOwner)
+    serializer_class = UserProfileSerializerForUpdate
