@@ -13,6 +13,10 @@ class TweetApiTests(TestCase):
 
     def setUp(self):
         self.user1 = self.create_user('user1', 'user1@jiuzhang.com')
+        p = self.user1.profile
+        p.nickname = 'a nickname'
+        p.save()
+        p.refresh_from_db()
         self.tweets1 = [
             self.create_tweet(self.user1)
             for i in range(3)
@@ -85,3 +89,8 @@ class TweetApiTests(TestCase):
         self.create_comment(self.user1, self.create_tweet(self.user2), '...')
         response = self.anonymous_client.get(url)
         self.assertEqual(len(response.data['comments']), 2)
+
+        # tweet 里包含用户的头像和昵称
+        p = self.user1.profile
+        self.assertEqual(response.data['user']['nickname'], p.nickname)
+        self.assertEqual(response.data['user']['avatar_url'], None)

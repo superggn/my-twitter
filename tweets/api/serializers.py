@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from accounts.api.serializers import UserSerializerForTweet
+from accounts.api.serializers import UserSerializerForTweet, UserSerializerWithProfile
 from comments.api.serializers import CommentSerializer
 from likes.api.serializers import LikeSerializer
 from likes.services import LikeService
@@ -53,6 +53,7 @@ class TweetSerializerForCreate(serializers.ModelSerializer):
 
 class TweetSerializerForDetail(TweetSerializer):
     # <HOMEWORK> 使用 serialziers.SerializerMethodField 的方式实现 comments
+    user = UserSerializerWithProfile()
     comments = CommentSerializer(source='comment_set', many=True)
     likes = LikeSerializer(source='like_set', many=True)
 
