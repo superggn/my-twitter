@@ -160,7 +160,7 @@ else:
 # 真实的开发场景下，可以使用 local_settings.py 的方式，或者设置在环境变量里的方式
 # 这样这些机密信息就可以只被负责运维的核心开发人员掌控，而非所有开发者，降低泄露风险
 # AWS_ACCESS_KEY_ID = 'YOUR_ACCESS_KEY_ID'
-# AWS_SEC   RET_ACCESS_KEY = 'YOUR_SECRET_ACCESS_KEY'
+# AWS_SECRET_ACCESS_KEY = 'YOUR_SECRET_ACCESS_KEY'
 
 # media 的作用适用于存放被用户上传的文件信息
 # 当我们使用默认 FileSystemStorage 作为 DEFAULT_FILE_STORAGE 的时候
