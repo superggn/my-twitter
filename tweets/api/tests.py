@@ -188,7 +188,7 @@ class TweetApiTests(TestCase):
 
         # pull the second page
         response = self.user1_client.get(TWEET_LIST_API, {
-            'created_at__lt': tweets[page_size - 1].id,
+            'created_at__lt': tweets[page_size - 1].created_at,
             'user_id': self.user1.id,
         })
         self.assertEqual(response.data['has_next_page'], False)
@@ -199,7 +199,7 @@ class TweetApiTests(TestCase):
 
         # pull latest newsfeeds
         response = self.user1_client.get(TWEET_LIST_API, {
-            'created_at__gt': tweets[0].id,
+            'created_at__gt': tweets[0].created_at,
             'user_id': self.user1.id,
         })
         self.assertEqual(response.data['has_next_page'], False)
@@ -208,7 +208,7 @@ class TweetApiTests(TestCase):
         new_tweet = self.create_tweet(self.user1, 'a new tweet comes in')
 
         response = self.user1_client.get(TWEET_LIST_API, {
-            'created_at__gt': tweets[0].id,
+            'created_at__gt': tweets[0].created_at,
             'user_id': self.user1.id,
         })
         self.assertEqual(response.data['has_next_page'], False)
