@@ -14,7 +14,8 @@ from tweets.services import TweetService
 
 
 class TweetSerializer(serializers.ModelSerializer):
-    user = UserSerializerForTweet()
+    # source: 从哪个字段加的
+    user = UserSerializerForTweet(source='cached_user')
     comments_count = serializers.SerializerMethodField()
     likes_count = serializers.SerializerMethodField()
     has_liked = serializers.SerializerMethodField()
@@ -53,7 +54,7 @@ class TweetSerializer(serializers.ModelSerializer):
 
 class TweetSerializerForDetail(TweetSerializer):
     # <HOMEWORK> 使用 serialziers.SerializerMethodField 的方式实现 comments
-    user = UserSerializerWithProfile()
+    user = UserSerializerWithProfile(source='cached_user')
     comments = CommentSerializer(source='comment_set', many=True)
     likes = LikeSerializer(source='like_set', many=True)
 

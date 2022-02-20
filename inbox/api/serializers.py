@@ -2,11 +2,18 @@ from notifications.models import Notification
 from rest_framework import serializers
 
 from accounts.api.serializers import UserSerializer
+from accounts.services import UserService
 
 
 class NotificationSerializer(serializers.ModelSerializer):
     # 其实这个 recipient 不用加，反正都是当前登录用户...
-    recipient = UserSerializer()
+    # 这里在缓存里其实有点问题，不过无所谓啦
+    recipient = serializers.SerializerMethodField()
+
+    def get_recipient(self, instance):
+        return UserSerializer(
+            UserService.get_user_through_cache(instance.actor_object_id),
+        ).data
 
     class Meta:
         model = Notification
