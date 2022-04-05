@@ -1,4 +1,5 @@
 from django.conf import settings
+
 from utils.redis_client import RedisClient
 from utils.redis_serializers import DjangoModelSerializer
 
@@ -59,3 +60,48 @@ class RedisHelper:
         conn.lpush(key, serialized_data)
         # ltrim 参数： 希望保留的区间
         conn.ltrim(key, 0, settings.REDIS_LIST_LENGTH_LIMIT - 1)
+
+    @classmethod
+    def get_count_key(cls, obj, attr):
+        return '{}.{}:{}'.format(obj.__class__.__name__, attr, obj.id)
+
+    @classmethod
+    def incr_count(cls, obj, attr):
+        """使用 obj 取一下缓存，如果没有缓存，取数据库里取"""
+        conn = RedisClient.get_connection()
+        key = cls.get_count_key(obj, attr)
+        if conn.exists(key):
+            return conn.incr(key)
+
+        # backfill from db
+        # 不执行 +1 操作，因为必须保障调用 incr_count 之前 obj.attr 已经 +1 过了
+        obj.refresh_from_db()
+        conn.set(key, getattr(obj, attr))
+        conn.expire(key, settings.REDIS_KEY_EXPIRE_TIME)
+        return getattr(obj, attr)
+
+    @classmethod
+    def decr_count(cls, obj, attr):
+        # todo 照着上面incr写一下
+        conn = RedisClient.get_connection()
+        key = cls.get_count_key(obj, attr)
+        if conn.exists(key):
+            return conn.decr(key)
+        # backfill from db
+        # 不执行 -1 操作，因为必须保障调用 incr_count 之前 obj.attr 已经 +1 过了
+        obj.refresh_from_db()
+        conn.set(key, getattr(obj, attr))
+        conn.expire(key, settings.REDIS_KEY_EXPIRE_TIME)
+        return getattr(obj, attr)
+
+    @classmethod
+    def get_count(cls, obj, attr):
+        conn = RedisClient.get_connection()
+        key = cls.get_count_key(obj, attr)
+        count = conn.get(key)
+        if count is not None:
+            return int(count)
+        obj.refresh_from_db()
+        count = getattr(obj, attr)
+        conn.set(key, count)
+        return count
