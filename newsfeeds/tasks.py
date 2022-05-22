@@ -1,4 +1,5 @@
 from celery import shared_task
+
 from friendships.services import FriendshipService
 from newsfeeds.models import NewsFeed
 from tweets.models import Tweet
