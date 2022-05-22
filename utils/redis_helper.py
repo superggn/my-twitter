@@ -73,7 +73,7 @@ class RedisHelper:
         if conn.exists(key):
             return conn.incr(key)
 
-        # backfill from db
+        # back fill from db
         # 不执行 +1 操作，因为必须保障调用 incr_count 之前 obj.attr 已经 +1 过了
         obj.refresh_from_db()
         conn.set(key, getattr(obj, attr))
@@ -88,7 +88,7 @@ class RedisHelper:
         if conn.exists(key):
             return conn.decr(key)
         # backfill from db
-        # 不执行 -1 操作，因为必须保障调用 incr_count 之前 obj.attr 已经 +1 过了
+        # 不执行 -1 操作，因为必须保障调用 decr_count 之前 obj.attr 已经 +1 过了
         obj.refresh_from_db()
         conn.set(key, getattr(obj, attr))
         conn.expire(key, settings.REDIS_KEY_EXPIRE_TIME)
