@@ -1,4 +1,6 @@
+from django.utils.decorators import method_decorator
 from notifications.models import Notification
+from ratelimit.decorators import ratelimit
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -25,18 +27,21 @@ class NotificationViewSet(
         return Notification.objects.filter(recipient=self.request.user)
 
     @action(methods=['GET'], detail=False, url_path='unread-count')
+    @method_decorator(ratelimit(key='user', rate='3/s', method='GET', block=True))
     def unread_count(self, request, *args, **kwargs):
         # GET /api/notifications/unread-count/
         count = self.get_queryset().filter(unread=True).count()
         return Response({'unread_count': count}, status=status.HTTP_200_OK)
 
     @action(methods=['POST'], detail=False, url_path='mark-all-as-read')
+    @method_decorator(ratelimit(key='user', rate='3/s', method='POST', block=True))
     def mark_all_as_read(self, request, *args, **kwargs):
         # queryset.update(): 批量操作
         updated_count = self.get_queryset().filter(unread=True).update(unread=False)
         return Response({'marked_count': updated_count}, status=status.HTTP_200_OK)
 
     @required_params(method='PUT', params=['unread'])
+    @method_decorator(ratelimit(key='user', rate='3/s', method='PUT', block=True))
     def update(self, request, *args, **kwargs):
         """
         注意，这里的 update 对应的是 PUT 请求，PATCH 对应的是 PARTIAL UPDATE
